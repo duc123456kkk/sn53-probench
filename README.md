@@ -35,7 +35,7 @@ workload verifiable-inference (hidden-states).
 
 ```bash
 # 1. Lấy tool (single file, không pip install gì thêm)
-curl -LO https://raw.githubusercontent.com/<user>/sn53-probench/main/sn53_probench.py
+curl -LO https://raw.githubusercontent.com/duc123456kkk/sn53-probench/main/sn53_probench.py
 #    (hoặc: scp sn53_probench.py root@box:/root/)
 
 # 2. Đảm bảo serve đang chạy — ví dụ tối thiểu:
