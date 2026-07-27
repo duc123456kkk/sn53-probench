@@ -18,7 +18,7 @@ workload verifiable-inference (hidden-states).
 
 ## Đo được gì
 
-- **TTFT / TPOT / ITL / E2E** — mean, median, p95, p99 (từ bench_serving official)
+- **TTFT / TPOT**: mean, median, p95, p99 · **ITL / E2E**: mean, p99 (từ bench_serving official)
 - **Throughput**: request/s, input tok/s, output tok/s
 - **GPU telemetry per-run**: SM util %, memory-bandwidth util %, power (W), VRAM — trả lời "nghẽn ở đâu" bằng số
 - **Thuế hidden-states**: cùng shape chạy `return_hidden_states` off/on → hệ số chậm (chỉ có ý nghĩa với workload verifiable-inference)
@@ -96,15 +96,19 @@ phá TTFT/acceptance của worker. `--force` để bỏ qua khi bạn hiểu rõ
 ```bash
 git clone https://github.com/duc123456kkk/sn53-probench.git && cd sn53-probench
 bash box/stage1_bench.sh                                   # stack + model 35GB (~10-20')
-nohup bash box/serve_tp2.sh > /root/logs/serve.log 2>&1 &  # tp2; 4090-pair 0.83, 5090-pair MEM_FRAC=0.85
+nohup bash box/serve.sh > /root/logs/serve.log 2>&1 &      # TP tự = số GPU (≤2); MEM_FRAC=0.83
 grep "trim armed" /root/logs/serve.log                     # BẮT BUỘC thấy trước khi đo
-python3 box/warm_ladder.py                                 # thang JIT 5.6k→12.9k→30k
+python3 box/warm_ladder.py                                 # thang JIT 5.6k→12.9k→17k→30k
 python3 sn53_bench.py --stage recon
-python3 sn53_probench.py --scenarios probe,chat,agentic,prefill --concurrency 1,4,8 --price-day <GIA>
-python3 sn53_bench.py --stage wave --mi-ladder 4,8 --out-ladder 4096 --price-day <GIA> --ssh-ip <IP>
+python3 sn53_probench.py --profile profiles/<class>.json --price-day <GIA>
+python3 sn53_bench.py    --profile profiles/<class>.json --price-day <GIA> --ssh-ip <IP>
 ```
 
-Box 1-GPU ≥44GB: serve 1-card (tp1, mem-frac 0.83/0.90) — serve_tp2.sh chỉ cho cặp 2 card.
+Mọi tham số tuỳ chỉnh được 4 lớp (CLI > profile > env `SN53_*` > default) — xem
+**PARAMETERS.md** (tài liệu đầy đủ) và `profiles/` (per-class: 4090-pair, 5090-pair,
+48g-single, pro6000-96g, hopper, smoke, default). Scenario tự chế ngay trên CLI:
+`--scenarios probe,myshape=20000/2048`. Default nhạy cảm được GHIM bằng incident —
+override sẽ in `[CANH BAO]` kèm lý do.
 
 ## License
 
