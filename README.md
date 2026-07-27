@@ -104,6 +104,8 @@ python3 sn53_probench.py --profile profiles/<class>.json --price-day <GIA>
 python3 sn53_bench.py    --profile profiles/<class>.json --price-day <GIA> --ssh-ip <IP>
 ```
 
+**1 lệnh trọn bộ**: `PRICE_DAY=13 SSH_IP=<IP> GUARD_HOST=$(hostname) PROFILE=profiles/<class>.json bash box/run_all.sh` (pull→screening→stage1→serve→trim→warm→probench→wave, idempotent — serve đang sống thì giữ nguyên).
+
 Mọi tham số tuỳ chỉnh được 4 lớp (CLI > profile > env `SN53_*` > default) — xem
 **PARAMETERS.md** (tài liệu đầy đủ) và `profiles/` (per-class: 4090-pair, 5090-pair,
 48g-single, pro6000-96g, hopper, smoke, default). Scenario tự chế ngay trên CLI:
