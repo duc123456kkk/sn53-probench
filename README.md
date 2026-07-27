@@ -91,6 +91,21 @@ phá TTFT/acceptance của worker. `--force` để bỏ qua khi bạn hiểu rõ
 4. Benchmark 1-wave PASS chưa chắc sống tải liên tục — đọc thêm cột GPU util/power để nhìn độ bão hoà.
 5. Timeout giết cả process-group — không để orphan bench tiếp tục bắn tải.
 
+## box/ — bringup để bench ngay trên box (không cần scp gì thêm)
+
+```bash
+git clone https://github.com/duc123456kkk/sn53-probench.git && cd sn53-probench
+bash box/stage1_bench.sh                                   # stack + model 35GB (~10-20')
+nohup bash box/serve_tp2.sh > /root/logs/serve.log 2>&1 &  # tp2; 4090-pair 0.83, 5090-pair MEM_FRAC=0.85
+grep "trim armed" /root/logs/serve.log                     # BẮT BUỘC thấy trước khi đo
+python3 box/warm_ladder.py                                 # thang JIT 5.6k→12.9k→30k
+python3 sn53_bench.py --stage recon
+python3 sn53_probench.py --scenarios probe,chat,agentic,prefill --concurrency 1,4,8 --price-day <GIA>
+python3 sn53_bench.py --stage wave --mi-ladder 4,8 --out-ladder 4096 --price-day <GIA> --ssh-ip <IP>
+```
+
+Box 1-GPU ≥44GB: serve 1-card (tp1, mem-frac 0.83/0.90) — serve_tp2.sh chỉ cho cặp 2 card.
+
 ## License
 
 MIT

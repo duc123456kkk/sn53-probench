@@ -108,6 +108,11 @@ def stage_recon(args):
         out["tp"], out["mem_frac"] = 1, 0.83          # I-28: 48GB card
     elif len(vram_mb) >= 2 and per_gpu >= 30:
         out["tp"], out["mem_frac"] = 2, 0.85          # 2x32GB (5090 pair)
+    elif len(vram_mb) >= 2 and per_gpu >= 22:
+        # 2x24GB (4090 pair): tp2 -> 17.1GB weights/card, pool ~5.6GB tong
+        # = dung bang class 48GB-don (jp48a) nhung bandwidth x2; frac chat hon
+        # vi headroom la GB tuyet doi, khong phai % (I-28)
+        out["tp"], out["mem_frac"] = 2, 0.83
     else:
         out["tp"], out["mem_frac"] = 0, 0             # khong du VRAM -> loai
     out["flags_extra"] = []
